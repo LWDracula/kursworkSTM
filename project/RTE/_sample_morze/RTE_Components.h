@@ -3,8 +3,8 @@
  * Auto generated Run-Time-Environment Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'kurs' 
- * Target:  'Target 1' 
+ * Project: 'Morze' 
+ * Target:  'sample_morze' 
  */
 
 #ifndef RTE_COMPONENTS_H
