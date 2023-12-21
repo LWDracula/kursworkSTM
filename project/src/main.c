@@ -6,18 +6,13 @@
 // задержка таймера 
 static volatile uint32_t TimingDelay;
 
-// цифра для вывода 
-static volatile int8_t digit = -1; 
-
-// длительность точки - 45 мс 
-const uint32_t dotDurationMs = 45; 
-
 // текущие огоньки
 static volatile int8_t fireworks = -1; 
 
 // текущий режим
-typedef enum {
-    Reflection,
+typedef enum 
+{
+	Reflection,
     Diverging,
     Colliding
 } WorkMode;
@@ -25,7 +20,7 @@ typedef enum {
 WorkMode CurrentMode;
 
 // текущая скорость
-static volatile float speed = -1;
+float speed;
 
 // выставляем задержку nTime мс 
 void Delay(volatile uint32_t nTime) 
@@ -97,20 +92,75 @@ void initTimer() {
 	NVIC_SetPriority(SysTick_IRQn, 4); 
 } 
 
-int main() { 
-	initTimer(); 
-	initKeypad(); 
-	initOutput(); 
-	initIRQ(); 
-	while(1){} 
+void reflection()
+{
+	float speedLocal = speed;
+	int8_t fireworksLocal = fireworks;
+	if (fireworksLocal == 1)
+	{
+
+	}
+	else if (fireworksLocal == 2)
+	{
+
+	}
+};
+void diverging()
+{
+	float speedLocal = speed;
+	int8_t fireworksLocal = fireworks;
+	if (fireworksLocal == 1)
+	{
+
+	}
+	else if (fireworksLocal == 2)
+	{
+		
+	}
+};
+void colliding()
+{
+	float speedLocal = speed;
+	int8_t fireworksLocal = fireworks;
+	if (fireworksLocal == 1)
+	{
+
+	}
+	else if (fireworksLocal == 2)
+	{
+		
+	}
+};
+
+int main() 
+{ 
+	initTimer();
+	initKeypad();
+	initOutput();
+	initIRQ();
+	while(1)
+	{
+		if (CurrentMode == Reflection)
+		{
+			reflection();
+		} 
+		else if (CurrentMode == Diverging)
+		{
+			diverging();
+		}
+		else if (CurrentMode == Colliding)
+		{
+			colliding();
+		}
+	}
 } 
 
-
-void Wait(uint32_t nCycles) { 
+/*void Wait(uint32_t nCycles) { 
 	Delay(nCycles * dotDurationMs); 
-} 
+} */
 
-void Dot() { 
+/*void Dot() { 
+
 	GPIOC->ODR = 1 << 13; 
 	Wait(1); // точка 
 	GPIOC->ODR = 0 << 13; 
@@ -143,7 +193,7 @@ void ProcessNumber(int number)
 		} 
 	} 
 	Wait(2); //пауза между знаками в слове-3 точки (одна после элемента+2) 
-} 
+}*/
 
 void Firerun()
 {
@@ -179,9 +229,9 @@ void Firerun()
 void EXTI0_IRQHandler(void) 
 {  
 	EXTI->PR = EXTI_PR_PR0; 
-	if (digit == -1) { 
+	/*if (digit == -1) { 
 		digit = 0; 
-	};
+	};*/
 	
 	if (fireworks == 1){
 		fireworks = 2;
@@ -192,7 +242,6 @@ void EXTI0_IRQHandler(void)
 		// вызываем обработчик софтовым прерыванием 
 		EXTI->SWIER = 0x400; 
 	} 
-
 
 void EXTI1_IRQHandler(void) 
 {  
@@ -223,17 +272,13 @@ void EXTI2_IRQHandler(void)
 	Firerun();
 } 
 
-
-
-
-
 // софтовое прерывание вызывает генератор Морзе 
 void EXTI15_10_IRQHandler(void) 
 {  
 	uint32_t pending = EXTI->PR; 
 	if (pending & (1 << 10)) { 
 		EXTI->PR = 1 << 10; 
-		ProcessNumber(digit); 
-		digit = -1; 
+		//ProcessNumber(digit); 
+		//digit = -1; 
 	} 
 } 
