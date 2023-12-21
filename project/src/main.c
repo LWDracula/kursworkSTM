@@ -4,10 +4,10 @@
 #include <stdlib.h>
 
 // задержка таймера 
-static volatile uint32_t TimingDelay;
+//static volatile uint32_t TimingDelay;
 
 // текущие огоньки
-static volatile int8_t fireworks = -1; 
+static volatile int8_t fireworks = 1; 
 
 // текущий режим
 typedef enum 
@@ -20,29 +20,29 @@ typedef enum
 WorkMode CurrentMode;
 
 // текущая скорость
-float speed;
+static volatile float speed;
 
 // выставляем задержку nTime мс 
-void Delay(volatile uint32_t nTime) 
+/*void Delay(volatile uint32_t nTime) 
 {  
 	TimingDelay = nTime; 
 	while(TimingDelay != 0); 
-} 
+} */
 
 // уменьшаем счетчик задержки 
-void TimingDelay_Decrement(void) 
+/*void TimingDelay_Decrement(void) 
 { 
 	if (TimingDelay != 0x00) 
 	{  
 		TimingDelay--; 
 	} 
-} 
+} */
 
 // обработчик прерывание системного таймера  
-void SysTick_Handler(void)  
+/*void SysTick_Handler(void)  
 { 
 	TimingDelay_Decrement(); 
-} 
+} */
 
 void initKeypad() { 
 	RCC->APB2ENR |= RCC_APB2ENR_IOPAEN; // разрешаем работу GPIO A 
@@ -94,17 +94,27 @@ void initTimer() {
 
 void reflection()
 {
+	
 	float speedLocal = speed;
 	int8_t fireworksLocal = fireworks;
+	static volatile int counter = 0;
 	if (fireworksLocal == 1)
 	{
-
+		GPIOB->ODR|=GPIO_ODR_ODR2;
+		while(counter != 10)
+		{counter++;}
+		GPIOB->ODR&= ~GPIO_ODR_ODR2;
+		counter = 0;
+		while(counter != 10)
+		{counter++;}
+		counter = 0;
 	}
 	else if (fireworksLocal == 2)
 	{
 
 	}
-};
+}
+
 void diverging()
 {
 	float speedLocal = speed;
@@ -134,6 +144,8 @@ void colliding()
 
 int main() 
 { 
+	//RCC->AHBENR |= RCC_;
+	CurrentMode = Reflection;
 	initTimer();
 	initKeypad();
 	initOutput();
