@@ -7,7 +7,7 @@
 //static volatile uint32_t TimingDelay;
 
 // текущие огоньки
-static volatile int8_t fireworks = 1; 
+static volatile int8_t fireworks = 2; 
 
 // текущий режим
 typedef enum 
@@ -20,7 +20,7 @@ typedef enum
 WorkMode CurrentMode;
 
 // текущая скорость
-static volatile float speed;
+static volatile float speed = 3;
 
 // выставляем задержку nTime мс 
 /*void Delay(volatile uint32_t nTime) 
@@ -63,7 +63,7 @@ void initOutput() {
 	RCC->APB2ENR |= RCC_APB2ENR_IOPBEN; // разрешаем работу GPIO  B
 	// PC13, Output mode, max speed 50 MHz, General purpose output push-pull 
 	GPIOB->CRH &= ~(GPIO_CRH_MODE13 | GPIO_CRH_CNF13); 
-	SET_BIT(GPIOB->CRH, GPIO_CRH_MODE13); 
+	SET_BIT(GPIOB->CRH, GPIO_CRH_MODE13);
 } 
 
 void initIRQ() { 
@@ -92,26 +92,116 @@ void initTimer() {
 	NVIC_SetPriority(SysTick_IRQn, 4); 
 } 
 
+void Delay(volatile int speeds) 
+{  
+volatile int counters = 0;
+volatile int speedcounter = 0;
+    while(counters != 10)
+        {
+          while(speedcounter != speeds)
+            
+           {speedcounter++;}
+            speedcounter = 0;
+            counters++;
+        }
+        counters = 0;
+}
+
 void reflection()
 {
-	
 	float speedLocal = speed;
 	int8_t fireworksLocal = fireworks;
 	static volatile int counter = 0;
 	if (fireworksLocal == 1)
 	{
+		// Right
 		GPIOB->ODR|=GPIO_ODR_ODR2;
-		while(counter != 10)
-		{counter++;}
+		Delay(speed);
 		GPIOB->ODR&= ~GPIO_ODR_ODR2;
-		counter = 0;
-		while(counter != 10)
-		{counter++;}
-		counter = 0;
+		GPIOB->ODR|=GPIO_ODR_ODR3;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR3;
+		GPIOB->ODR|=GPIO_ODR_ODR4;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR4;
+		GPIOB->ODR|=GPIO_ODR_ODR5;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR5;
+		GPIOB->ODR|=GPIO_ODR_ODR6;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR6;
+		GPIOB->ODR|=GPIO_ODR_ODR7;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR7;
+		GPIOB->ODR|=GPIO_ODR_ODR8;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR8;
+		GPIOB->ODR|=GPIO_ODR_ODR9;
+		// Left
+		GPIOB->ODR&= ~GPIO_ODR_ODR9;
+		GPIOB->ODR|=GPIO_ODR_ODR8;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR8;
+		GPIOB->ODR|=GPIO_ODR_ODR7;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR7;
+		GPIOB->ODR|=GPIO_ODR_ODR6;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR6;
+		GPIOB->ODR|=GPIO_ODR_ODR5;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR5;
+		GPIOB->ODR|=GPIO_ODR_ODR4;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR4;
+		GPIOB->ODR|=GPIO_ODR_ODR3;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR3;
+		GPIOB->ODR|=GPIO_ODR_ODR2;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR2;
 	}
 	else if (fireworksLocal == 2)
 	{
-
+		// Right
+		GPIOB->ODR|=GPIO_ODR_ODR2;
+		GPIOB->ODR|=GPIO_ODR_ODR3;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR2;
+		GPIOB->ODR|=GPIO_ODR_ODR4;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR3;
+		GPIOB->ODR|=GPIO_ODR_ODR5;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR4;
+		GPIOB->ODR|=GPIO_ODR_ODR6;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR5;
+		GPIOB->ODR|=GPIO_ODR_ODR7;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR6;
+		GPIOB->ODR|=GPIO_ODR_ODR8;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR7;
+		GPIOB->ODR|=GPIO_ODR_ODR9;
+		// Left
+		GPIOB->ODR&= ~GPIO_ODR_ODR9;
+		GPIOB->ODR|=GPIO_ODR_ODR7;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR8;
+		GPIOB->ODR|=GPIO_ODR_ODR6;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR7;
+		GPIOB->ODR|=GPIO_ODR_ODR5;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR6;
+		GPIOB->ODR|=GPIO_ODR_ODR4;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR5;
+		GPIOB->ODR|=GPIO_ODR_ODR3;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR4;
+		GPIOB->ODR|=GPIO_ODR_ODR2;
 	}
 }
 
@@ -121,31 +211,130 @@ void diverging()
 	int8_t fireworksLocal = fireworks;
 	if (fireworksLocal == 1)
 	{
-
+		GPIOB->ODR|=GPIO_ODR_ODR5;
+		GPIOB->ODR|=GPIO_ODR_ODR6;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR6;
+		GPIOB->ODR&= ~GPIO_ODR_ODR5;
+		GPIOB->ODR|=GPIO_ODR_ODR4;
+		GPIOB->ODR|=GPIO_ODR_ODR7;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR4;
+		GPIOB->ODR&= ~GPIO_ODR_ODR7;
+		GPIOB->ODR|=GPIO_ODR_ODR3;
+		GPIOB->ODR|=GPIO_ODR_ODR8;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR3;
+		GPIOB->ODR&= ~GPIO_ODR_ODR8;
+		GPIOB->ODR|=GPIO_ODR_ODR2;
+		GPIOB->ODR|=GPIO_ODR_ODR9;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR2;
+		GPIOB->ODR&= ~GPIO_ODR_ODR9;
 	}
 	else if (fireworksLocal == 2)
 	{
-		
+		GPIOB->ODR|=GPIO_ODR_ODR5;
+		GPIOB->ODR|=GPIO_ODR_ODR6;
+		GPIOB->ODR|=GPIO_ODR_ODR4;
+		GPIOB->ODR|=GPIO_ODR_ODR7;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR6;
+		GPIOB->ODR&= ~GPIO_ODR_ODR5;
+		GPIOB->ODR|=GPIO_ODR_ODR3;
+		GPIOB->ODR|=GPIO_ODR_ODR8;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR4;
+		GPIOB->ODR&= ~GPIO_ODR_ODR7;
+		GPIOB->ODR|=GPIO_ODR_ODR2;
+		GPIOB->ODR|=GPIO_ODR_ODR9;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR3;
+		GPIOB->ODR&= ~GPIO_ODR_ODR8;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR2;
+		GPIOB->ODR&= ~GPIO_ODR_ODR9;
+		Delay(speed);
 	}
-};
+}
 void colliding()
 {
 	float speedLocal = speed;
 	int8_t fireworksLocal = fireworks;
 	if (fireworksLocal == 1)
 	{
-
+		GPIOB->ODR|=GPIO_ODR_ODR2;
+		GPIOB->ODR|=GPIO_ODR_ODR9;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR2;
+		GPIOB->ODR&= ~GPIO_ODR_ODR9;
+		GPIOB->ODR|=GPIO_ODR_ODR3;
+		GPIOB->ODR|=GPIO_ODR_ODR8;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR3;
+		GPIOB->ODR&= ~GPIO_ODR_ODR8;
+		GPIOB->ODR|=GPIO_ODR_ODR4;
+		GPIOB->ODR|=GPIO_ODR_ODR7;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR4;
+		GPIOB->ODR&= ~GPIO_ODR_ODR7;
+		GPIOB->ODR|=GPIO_ODR_ODR5;
+		GPIOB->ODR|=GPIO_ODR_ODR6;
+		Delay(speed);
+		GPIOB->ODR|=GPIO_ODR_ODR4;
+		GPIOB->ODR|=GPIO_ODR_ODR7;
+		GPIOB->ODR|=GPIO_ODR_ODR3;
+		GPIOB->ODR|=GPIO_ODR_ODR8;
+		GPIOB->ODR|=GPIO_ODR_ODR2;
+		GPIOB->ODR|=GPIO_ODR_ODR9;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR5;
+		GPIOB->ODR&= ~GPIO_ODR_ODR6;
+		GPIOB->ODR&= ~GPIO_ODR_ODR4;
+		GPIOB->ODR&= ~GPIO_ODR_ODR7;
+		GPIOB->ODR&= ~GPIO_ODR_ODR3;
+		GPIOB->ODR&= ~GPIO_ODR_ODR8;
+		GPIOB->ODR&= ~GPIO_ODR_ODR2;
+		GPIOB->ODR&= ~GPIO_ODR_ODR9;
 	}
 	else if (fireworksLocal == 2)
 	{
-		
+		GPIOB->ODR|=GPIO_ODR_ODR2;
+		GPIOB->ODR|=GPIO_ODR_ODR9;
+		GPIOB->ODR|=GPIO_ODR_ODR3;
+		GPIOB->ODR|=GPIO_ODR_ODR8;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR2;
+		GPIOB->ODR&= ~GPIO_ODR_ODR9;
+		GPIOB->ODR|=GPIO_ODR_ODR4;
+		GPIOB->ODR|=GPIO_ODR_ODR7;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR3;
+		GPIOB->ODR&= ~GPIO_ODR_ODR8;
+		GPIOB->ODR|=GPIO_ODR_ODR5;
+		GPIOB->ODR|=GPIO_ODR_ODR6;
+		Delay(speed);
+		GPIOB->ODR|=GPIO_ODR_ODR3;
+		GPIOB->ODR|=GPIO_ODR_ODR8;
+		GPIOB->ODR|=GPIO_ODR_ODR2;
+		GPIOB->ODR|=GPIO_ODR_ODR9;
+		Delay(speed);
+		GPIOB->ODR&= ~GPIO_ODR_ODR5;
+		GPIOB->ODR&= ~GPIO_ODR_ODR6;
+		GPIOB->ODR&= ~GPIO_ODR_ODR4;
+		GPIOB->ODR&= ~GPIO_ODR_ODR7;
+		GPIOB->ODR&= ~GPIO_ODR_ODR3;
+		GPIOB->ODR&= ~GPIO_ODR_ODR8;
+		GPIOB->ODR&= ~GPIO_ODR_ODR2;
+		GPIOB->ODR&= ~GPIO_ODR_ODR9;
+		Delay(speed);
 	}
 };
 
 int main() 
 { 
 	//RCC->AHBENR |= RCC_;
-	CurrentMode = Reflection;
+	CurrentMode = Colliding;
 	initTimer();
 	initKeypad();
 	initOutput();
@@ -166,46 +355,6 @@ int main()
 		}
 	}
 } 
-
-/*void Wait(uint32_t nCycles) { 
-	Delay(nCycles * dotDurationMs); 
-} */
-
-/*void Dot() { 
-
-	GPIOC->ODR = 1 << 13; 
-	Wait(1); // точка 
-	GPIOC->ODR = 0 << 13; 
-	Wait(1); // пауза между элементами знака 
-} 
-
-void Dash() { 
-	GPIOC->ODR = 1 << 13; 
-	Wait(3); // тире, длительность - 3 точки 
-	GPIOC->ODR = 0 << 13; 
-	Wait(1); // пауза между элементами знака 
-} 
-
-// вывод цифры азбукой морзе и на экран  
-void ProcessNumber(int number) 
-{ 
-	ITM_SendChar(0x30 + number); 
-	ITM_SendChar('\n'); 
-	uint8_t i, code, bit; 
-	//code = morseCodes[number]; 
-	for (i = 0; i < 5; i++) { 
-		bit = (code & ( 1 << i )) >> i; 
-		if (bit == 0)  
-		{ 
-			Dot(); 
-		} 
-		else  
-		{ 
-			Dash(); 
-		} 
-	} 
-	Wait(2); //пауза между знаками в слове-3 точки (одна после элемента+2) 
-}*/
 
 void Firerun()
 {
