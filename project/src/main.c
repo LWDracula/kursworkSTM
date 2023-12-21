@@ -2,14 +2,19 @@
 #include CMSIS_device_header 
 #include <stdio.h> 
 #include <stdlib.h>
+
 // задержка таймера 
-static volatile uint32_t TimingDelay; 
+static volatile uint32_t TimingDelay;
+
 // цифра для вывода 
 static volatile int8_t digit = -1; 
+
 // длительность точки - 45 мс 
 const uint32_t dotDurationMs = 45; 
+
 // текущие огоньки
 static volatile int8_t fireworks = -1; 
+
 // текущий режим
 typedef enum {
     Reflection,
@@ -18,24 +23,9 @@ typedef enum {
 } WorkMode;
 
 WorkMode CurrentMode;
+
 // текущая скорость
 static volatile float speed = -1;
-// коды Морзе для цифр от 0 до 9 
-// 0 - точка, 1 - тире, RTL, 5 значимых позиций 
-const int8_t morseCodes[] = {
-	0x1F, // 00011111 - 0
-	0x1E, // 00011110 - 1
-	0x1C, // 00011100 - 2
-	0x18, // 00011000 - 3
-	0x10, // 00010000 - 4
-	0x00, // 00000000 - 5
-	0x01, // 00000001 - 6
-	0x03, // 00000011 -7
-	0x07, // 00000111 - 8
-	0x0F }; // 00001111 - 9
-
-
-
 
 // выставляем задержку nTime мс 
 void Delay(volatile uint32_t nTime) 
@@ -140,7 +130,7 @@ void ProcessNumber(int number)
 	ITM_SendChar(0x30 + number); 
 	ITM_SendChar('\n'); 
 	uint8_t i, code, bit; 
-	code = morseCodes[number]; 
+	//code = morseCodes[number]; 
 	for (i = 0; i < 5; i++) { 
 		bit = (code & ( 1 << i )) >> i; 
 		if (bit == 0)  
@@ -157,28 +147,33 @@ void ProcessNumber(int number)
 
 void Firerun()
 {
-	if (fireworks == -1){
+	if (fireworks == -1)
+	{
 		fireworks = 1;
 	};
-	if (speed == -1){
+	if (speed == -1)
+	{
 		speed = 3;
 	}
+	
 	printf("Fire = %d\n", fireworks);
 	printf("Speed = %f\n", speed);
-	switch (CurrentMode) {
-        case Reflection:
-            printf("Current work mode: Reflection\n");
-            break;
-        case Diverging:
-            printf("Current work mode: Diverging\n");
-            break;
-        case Colliding:
-            printf("Current work mode: Colliding\n");
-            break;
-        default:
-            printf("Unknown work mode\n");
-            break;
-			}
+	
+	switch (CurrentMode) 
+	{
+		case Reflection:
+			printf("Current work mode: Reflection\n");
+			break;
+    case Diverging:
+      printf("Current work mode: Diverging\n");
+      break;
+    case Colliding:
+      printf("Current work mode: Colliding\n");
+      break;
+    default:
+      printf("Unknown work mode\n");
+      break;
+	}
 }
 
 void EXTI0_IRQHandler(void) 
