@@ -3,16 +3,13 @@
 #include <stdio.h> 
 #include <stdlib.h>
 
-// задержка таймера 
-//static volatile uint32_t TimingDelay;
-
 // текущие огоньки
-static volatile int8_t fireworks = 2; 
+static volatile int8_t fireworks = 1; 
 
 // текущий режим
 typedef enum 
 {
-	Reflection,
+	  Reflection,
     Diverging,
     Colliding
 } WorkMode;
@@ -20,29 +17,8 @@ typedef enum
 WorkMode CurrentMode;
 
 // текущая скорость
-static volatile float speed = 3;
+volatile int speed = 3;
 
-// выставляем задержку nTime мс 
-/*void Delay(volatile uint32_t nTime) 
-{  
-	TimingDelay = nTime; 
-	while(TimingDelay != 0); 
-} */
-
-// уменьшаем счетчик задержки 
-/*void TimingDelay_Decrement(void) 
-{ 
-	if (TimingDelay != 0x00) 
-	{  
-		TimingDelay--; 
-	} 
-} */
-
-// обработчик прерывание системного таймера  
-/*void SysTick_Handler(void)  
-{ 
-	TimingDelay_Decrement(); 
-} */
 
 void initKeypad() { 
 	RCC->APB2ENR |= RCC_APB2ENR_IOPAEN; // разрешаем работу GPIO A 
@@ -70,27 +46,18 @@ void initIRQ() {
 	// прерывание на спад сигнала 
 	SET_BIT(EXTI->FTSR, EXTI_FTSR_TR0 | EXTI_FTSR_TR1 | EXTI_FTSR_TR2); 
 	// разрешаем прерывания внешних линий 0-2, 10 - софтовое прерывание 
-	SET_BIT(EXTI->IMR, EXTI_IMR_MR0 | EXTI_IMR_MR1 | EXTI_IMR_MR2 |  EXTI_IMR_MR10); 
+	SET_BIT(EXTI->IMR, EXTI_IMR_MR0 | EXTI_IMR_MR1 | EXTI_IMR_MR2); 
 	NVIC_EnableIRQ(EXTI0_IRQn); 
 	NVIC_EnableIRQ(EXTI1_IRQn); 
 	NVIC_EnableIRQ(EXTI2_IRQn);  
-	NVIC_EnableIRQ(EXTI15_10_IRQn); 
-	NVIC_SetPriority(EXTI0_IRQn, 7); 
-	NVIC_SetPriority(EXTI1_IRQn, 7); 
-	NVIC_SetPriority(EXTI2_IRQn, 7); 
-	NVIC_SetPriority(EXTI15_10_IRQn, 15); 
+	
+	NVIC_SetPriority(EXTI0_IRQn, 1); 
+	NVIC_SetPriority(EXTI1_IRQn, 1); 
+	NVIC_SetPriority(EXTI2_IRQn, 1); 
+	
 } 
 
-void initTimer() { 
-	SystemCoreClockUpdate(); 
-	// прерывание каждые 1мс 
-	if (SysTick_Config(SystemCoreClock / 1000)) 
-	{  
-		/* Capture error */  
-		while (1); 
-	} 
-	NVIC_SetPriority(SysTick_IRQn, 4); 
-} 
+
 
 void Delay(volatile int speeds) 
 {  
@@ -109,6 +76,7 @@ volatile int speedcounter = 0;
 
 void reflection()
 {
+	
 	float speedLocal = speed;
 	int8_t fireworksLocal = fireworks;
 	static volatile int counter = 0;
@@ -333,9 +301,6 @@ void colliding()
 
 int main() 
 { 
-	//RCC->AHBENR |= RCC_;
-	CurrentMode = Colliding;
-	initTimer();
 	initKeypad();
 	initOutput();
 	initIRQ();
@@ -368,7 +333,7 @@ void Firerun()
 	}
 	
 	printf("Fire = %d\n", fireworks);
-	printf("Speed = %f\n", speed);
+	printf("Speed = %d\n", speed);
 	
 	switch (CurrentMode) 
 	{
@@ -390,9 +355,6 @@ void Firerun()
 void EXTI0_IRQHandler(void) 
 {  
 	EXTI->PR = EXTI_PR_PR0; 
-	/*if (digit == -1) { 
-		digit = 0; 
-	};*/
 	
 	if (fireworks == 1){
 		fireworks = 2;
@@ -400,8 +362,8 @@ void EXTI0_IRQHandler(void)
 	else {fireworks = 1;
 	}
 		Firerun();
-		// вызываем обработчик софтовым прерыванием 
-		EXTI->SWIER = 0x400; 
+		// снимаем флаг прерывания
+		EXTI->PR = 1; 
 	} 
 
 void EXTI1_IRQHandler(void) 
@@ -411,12 +373,11 @@ void EXTI1_IRQHandler(void)
 		speed = 1;
 	}
 	else if (speed == 1){
-		speed = 0.05;
+		speed = 5;
 	}
 	else {speed = 3;}
 		Firerun();
-		// вызываем обработчик софтовым прерыванием 
-		EXTI->SWIER = 0x400; 
+		EXTI->PR = 2; 
 	
 } 
 
@@ -431,15 +392,5 @@ void EXTI2_IRQHandler(void)
 	}
 	else {CurrentMode = Reflection;}
 	Firerun();
-} 
-
-// софтовое прерывание вызывает генератор Морзе 
-void EXTI15_10_IRQHandler(void) 
-{  
-	uint32_t pending = EXTI->PR; 
-	if (pending & (1 << 10)) { 
-		EXTI->PR = 1 << 10; 
-		//ProcessNumber(digit); 
-		//digit = -1; 
-	} 
+  EXTI->PR = 3; 
 } 
